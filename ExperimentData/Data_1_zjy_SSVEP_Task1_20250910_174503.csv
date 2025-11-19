@@ -1,0 +1,10 @@
+UserID,Timestamp,ExpType,BlockIndex,TargetIndex,PhaseRadius,TargetVisualAngular,Result,SelectionTime
+1,2025-09-10 17:45:19.391,SSVEP_Task1,1,1,30,2,True,3
+1,2025-09-10 17:45:27.004,SSVEP_Task1,1,2,30,2,False,3
+1,2025-09-10 17:45:34.570,SSVEP_Task1,1,3,30,2,False,3
+1,2025-09-10 17:45:43.251,SSVEP_Task1,1,4,30,2,False,3
+1,2025-09-10 17:45:51.783,SSVEP_Task1,1,5,30,2,False,3
+1,2025-09-10 17:46:00.581,SSVEP_Task1,1,6,30,2,False,3
+1,2025-09-10 17:46:08.931,SSVEP_Task1,1,7,30,2,False,3
+1,2025-09-10 17:46:17.914,SSVEP_Task1,1,8,30,2,False,3
+1,2025-09-10 17:46:26.182,SSVEP_Task1,1,9,30,2,False,3
