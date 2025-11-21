@@ -1,12 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Oculus.Platform;
+using Oculus.Platform.Models;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Oculus.Platform;
-using Oculus.Platform.Models;
-using System;
 
 public class T2_aimTarget_SSEVEP : MonoBehaviour
 {
@@ -22,18 +22,17 @@ public class T2_aimTarget_SSEVEP : MonoBehaviour
     private float currentTime;
     private bool updating = true;
     bool startGame = false;
-    
+
     public int currentTargetIndex;
     public int count = 0;
     private bool isConfirmed_once = false;
     public static bool inPractice = true;
-    private OVRInput.Button buttonA = OVRInput.Button.One;  // 默认是 A 按钮
-    private OVRInput.Button buttonB = OVRInput.Button.Two;  // 默认是 B 按钮
+    private OVRInput.Button buttonA = OVRInput.Button.One; // 默认是 A 按钮
+    private OVRInput.Button buttonB = OVRInput.Button.Two; // 默认是 B 按钮
     public int PracticeBlockNumber = 5;
     private bool isPause = false;
     private int targetsNumber;
 
-    
     // Use this for initialization
     void Start()
     {
@@ -45,12 +44,11 @@ public class T2_aimTarget_SSEVEP : MonoBehaviour
         // SocketControl.authenticateState = true; //only for test;
     }
 
-
     void Update()
     {
         if (isPause)
         {
-            if ( Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 SetTextBoardContext("Pratice Block");
                 isPause = false;
@@ -62,7 +60,7 @@ public class T2_aimTarget_SSEVEP : MonoBehaviour
 
         if (inPractice) // 训练阶段
         {
-            if(count == PracticeBlockNumber * targetsNumber)
+            if (count == PracticeBlockNumber * targetsNumber)
             {
                 sceneManager.QuitApplication();
             }
@@ -72,19 +70,22 @@ public class T2_aimTarget_SSEVEP : MonoBehaviour
                 showNextTarget();
             }
             if (Input.GetKeyDown(KeyCode.Z) || OVRInput.GetDown(buttonA))
-             {
+            {
                 flickerControl.TurnFlickerOff();
                 initTargetIndex();
                 inPractice = false; // 跳出训练阶段
                 TitleText.text = "Clabirate Phase";
                 count = 0;
-             }
+            }
         }
 
-        if(!inPractice)
+        if (!inPractice)
             clabiratedAndStart(); //校准
 
-        if ((isConfirmed_once || Input.GetKeyDown(KeyCode.S) || OVRInput.GetDown(buttonB)) && !inPractice)
+        if (
+            (isConfirmed_once || Input.GetKeyDown(KeyCode.S) || OVRInput.GetDown(buttonB))
+            && !inPractice
+        )
         {
             if (startGame)
             {
@@ -95,17 +96,15 @@ public class T2_aimTarget_SSEVEP : MonoBehaviour
                 // ball.endNotify();
                 showNextTarget();
                 Debug.Log("Trial: " + count.ToString());
-                if(count == trialCount)
+                if (count == trialCount)
                 {
                     IOManager.finishExperiment();
                     SceneManager.LoadScene("over");
                 }
-                TitleText.text = (Mathf.Floor((99 - count)  / 11)).ToString();
+                TitleText.text = (Mathf.Floor((99 - count) / 11)).ToString();
             }
         }
-
     }
-
 
     void clabiratedAndStart()
     {
@@ -116,10 +115,10 @@ public class T2_aimTarget_SSEVEP : MonoBehaviour
                 preBall = null;
                 startGame = true;
                 currentTime = Time.time;
-                
+
                 if (IOManager.stateCM == Modality.ModalityState.SSVEP)
                 {
-                   IOManager.createUser_SSVEP();
+                    IOManager.createUser_SSVEP();
                 }
             }
         }
@@ -150,17 +149,17 @@ public class T2_aimTarget_SSEVEP : MonoBehaviour
         count++;
     }
 
-    public void initTestSetUp() {
+    public void initTestSetUp()
+    {
         TitleText.text = "Practice Phase";
         initTargetIndex();
-    } 
+    }
 
     void reSetData()
     {
         currentTime = Time.time;
         preBall = ball;
     }
-
 
     void confirmationMethods()
     {
@@ -169,12 +168,7 @@ public class T2_aimTarget_SSEVEP : MonoBehaviour
         //{
         //    SSVEP();
         //}
-        
     }
 
-    private void SetTextBoardContext(string text)
-    {
-
-    }
-
+    private void SetTextBoardContext(string text) { }
 }

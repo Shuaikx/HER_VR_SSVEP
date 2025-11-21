@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using NUnit.Framework;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.XR;
-using System.Threading;
-using System.Linq;
-using NUnit.Framework;
-using UnityEditor;
-using Unity.VisualScripting;
 
 /*
  * center point and eye posint should be calibrated in the future
@@ -22,18 +22,20 @@ using Unity.VisualScripting;
 
 public class sceneManager : MonoBehaviour
 {
-
     public static sceneManager Instance;
     public GameObject firstBall;
     public GameObject eye;
     public GameObject center;
     public GameObject Balls;
     public bool IsSSVEP = false;
-[Header("Target Number")]
+
+    [Header("Target Number")]
     //set the following three factors
-   [SerializeField]public int targetNumber =1; // todo:
-    
+    [SerializeField]
+    public int targetNumber = 11; // todo:
+
     public static int expCount = 0;
+
     //public static int expCount2 = 0;
     //the distance from eyes to the certer
     float depthDistance = 100; // Depth
@@ -52,6 +54,7 @@ public class sceneManager : MonoBehaviour
     ExpList expList;
     private bool isPratice = true;
     public List<Vector2> expSettingsVector2;
+
     private void Awake()
     {
         Instance = this;
@@ -64,17 +67,15 @@ public class sceneManager : MonoBehaviour
         includedAngle_angle = (float)360 / targetNumber;
         threeIncludedAngle_angle = 5 * includedAngle_angle;
         centerPoint = new Vector3(0, 0, depthDistance);
-        if (isPratice)// Initial size
+        if (isPratice) // Initial size
         {
             angularDistance = 30f;
             targetVisualWidth_angle = 4f;
         }
         oneSide_angle = sceneUtility.outputOneSide_angle(angularDistance, threeIncludedAngle_angle);
-        Debug.LogWarning($"oneSide_angle {oneSide_angle}");
         produceFittsCircle(targetNumber, firstBall, firstballPosition); // Generate balls
     }
 
-    
     public void setIsPratice(bool state)
     {
         isPratice = state;
@@ -96,32 +97,47 @@ public class sceneManager : MonoBehaviour
 
         changeBallPosition(targetNumber, firstBall);
     }
+
     // Scene update - size and spacing change
     public void updateScene()
     {
         expCount++;
-        if(expCount >= 9+2)
+        if (expCount >= 9 + 2)
         {
             expCount = 0;
             return;
         }
         //Debug.Log("expCount2:" + expCount2);
-        Debug.Log("Scene Index: " + (expCount+1));
+        Debug.Log("Scene Index: " + (expCount + 1));
         angularDistance = expList.expSettings[expCount].Item1;
         targetVisualWidth_angle = expList.expSettings[expCount].Item2;
-        Debug.Log("Target Width: " + targetVisualWidth_angle + ", Angular Distance: " + angularDistance);
+        Debug.Log(
+            "Target Width: " + targetVisualWidth_angle + ", Angular Distance: " + angularDistance
+        );
         oneSide_angle = sceneUtility.outputOneSide_angle(angularDistance, threeIncludedAngle_angle);
         changeBallPosition(targetNumber, firstBall);
     }
-    
-    
+
     // Create 11 balls
-    private void produceFittsCircle(int targetNumber, GameObject originBall, Vector3 startBallPosition)
+    private void produceFittsCircle(
+        int targetNumber,
+        GameObject originBall,
+        Vector3 startBallPosition
+    )
     {
-        firstballPosition = sceneUtility.outputFirstballPosition(centerPoint, depthDistance, oneSide_angle);
-     Debug.LogWarning(firstballPosition);
+        firstballPosition = sceneUtility.outputFirstballPosition(
+            centerPoint,
+            depthDistance,
+            oneSide_angle
+        );
+        Debug.LogWarning(firstballPosition);
+        Debug.LogWarning(startBallPosition);
         originBall.transform.position = firstballPosition;
-        float targetActualWidth = sceneUtility.targetActualWidth(targetVisualWidth_angle, originBall.transform, eye.transform);
+        float targetActualWidth = sceneUtility.targetActualWidth(
+            targetVisualWidth_angle,
+            originBall.transform,
+            eye.transform
+        );
         originBall.transform.localScale *= targetActualWidth;
         originBall.name = "Ball0";
         Ball_SSVEP SSVEP_O = originBall.GetComponent<Ball_SSVEP>();
@@ -138,17 +154,26 @@ public class sceneManager : MonoBehaviour
         }
 
         Vector3 preBallPosition = firstballPosition;
-        for (int i = 0; i < targetNumber - 1; i++) {
-            Vector3 convertOncePosition = sceneUtility.convertPositionOnce(preBallPosition, threeIncludedAngle_angle);
-            GameObject clone = GameObject.Instantiate(originBall, convertOncePosition, Quaternion.identity);
+        for (int i = 0; i < targetNumber - 1; i++)
+        {
+            Vector3 convertOncePosition = sceneUtility.convertPositionOnce(
+                preBallPosition,
+                threeIncludedAngle_angle
+            );
+            GameObject clone = GameObject.Instantiate(
+                originBall,
+                convertOncePosition,
+                Quaternion.identity
+            );
             clone.transform.parent = Balls.transform;
             Ball_SSVEP SSVEP = clone.GetComponent<Ball_SSVEP>();
             // Ball ball = clone.GetComponent<Ball>();
-            // Debug.LogWarning(ball); // 没有挂在脚本 
-            
+            // Debug.LogWarning(ball); // 没有挂在脚本
+
             int index = i + 1;
-            if (SSVEP) {
-                SSVEP.Index = index+1;
+            if (SSVEP)
+            {
+                SSVEP.Index = index + 1;
                 SSVEP.CycleHz = expList.targetCycleHz[index];
                 SSVEP.PhaseDelay = expList.targetCyclePhasedelay[index];
             }
@@ -165,18 +190,29 @@ public class sceneManager : MonoBehaviour
     private void changeBallPosition(int targetNumber, GameObject originBall)
     {
         // Record previous ball position
-        firstballPosition = sceneUtility.outputFirstballPosition(centerPoint, depthDistance, oneSide_angle);
+        firstballPosition = sceneUtility.outputFirstballPosition(
+            centerPoint,
+            depthDistance,
+            oneSide_angle
+        );
         // Move origin ball to that position
         originBall.transform.position = firstballPosition;
         // Change target ball to preset width
-        float targetActualWidth = sceneUtility.targetActualWidth(targetVisualWidth_angle, originBall.transform, eye.transform);
-        originBall.transform.localScale = new Vector3(1,1,1);
-        originBall.transform.localScale *= targetActualWidth; 
+        float targetActualWidth = sceneUtility.targetActualWidth(
+            targetVisualWidth_angle,
+            originBall.transform,
+            eye.transform
+        );
+        originBall.transform.localScale = new Vector3(1, 1, 1);
+        originBall.transform.localScale *= targetActualWidth;
 
         var preBallPosition = firstballPosition;
         for (int i = 0; i < targetNumber - 1; i++)
         {
-            Vector3 convertOncePosition = sceneUtility.convertPositionOnce(preBallPosition, threeIncludedAngle_angle);
+            Vector3 convertOncePosition = sceneUtility.convertPositionOnce(
+                preBallPosition,
+                threeIncludedAngle_angle
+            );
             GameObject gb = GameObject.Find("Ball" + (i + 1).ToString());
             gb.transform.position = convertOncePosition;
             gb.transform.localScale = new Vector3(1, 1, 1);

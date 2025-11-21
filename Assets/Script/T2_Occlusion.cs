@@ -31,7 +31,9 @@ public class T2_Occlusion : MonoBehaviour
 
         if (Ball1.transform.localScale != Vector3.one || Ball2.transform.localScale != Vector3.one)
         {
-            Debug.LogWarning("For accurate occlusion, Ball1 and Ball2 should have a scale of (1,1,1) as their size is assumed to be 1 unit diameter.");
+            Debug.LogWarning(
+                "For accurate occlusion, Ball1 and Ball2 should have a scale of (1,1,1) as their size is assumed to be 1 unit diameter."
+            );
         }
 
         SetOcclusion();
@@ -56,7 +58,9 @@ public class T2_Occlusion : MonoBehaviour
 
         if (distCamToBall1Plane >= distCamToBall2Plane && TargetOcclusion > 0.01f)
         {
-            Debug.LogWarning("Ball1 is not closer to the camera than Ball2. Meaningful occlusion might not be achievable as configured.");
+            Debug.LogWarning(
+                "Ball1 is not closer to the camera than Ball2. Meaningful occlusion might not be achievable as configured."
+            );
         }
 
         // --- 2. Calculate apparent radii ---
@@ -64,7 +68,11 @@ public class T2_Occlusion : MonoBehaviour
         float r1_apparent = BallPhysicalRadius * (distCamToBall2Plane / distCamToBall1Plane);
 
         // --- 3. Find target separation 'd' for the projected centers ---
-        float targetSeparation_d = FindSeparationForOcclusion(r1_apparent, r2_apparent, TargetOcclusion);
+        float targetSeparation_d = FindSeparationForOcclusion(
+            r1_apparent,
+            r2_apparent,
+            TargetOcclusion
+        );
 
         // --- 4. Position Ball1 ---
         // MODIFICATION START: Get a random direction on the camera's XY plane (screen plane).
@@ -77,19 +85,26 @@ public class T2_Occlusion : MonoBehaviour
 
         // Convert the 2D screen direction to a 3D world space direction
         // relative to the camera's orientation.
-        Vector3 offsetDirectionWorld = (mainCamera.transform.right * randomDirection2D.x +
-                                        mainCamera.transform.up * randomDirection2D.y).normalized;
+        Vector3 offsetDirectionWorld = (
+            mainCamera.transform.right * randomDirection2D.x
+            + mainCamera.transform.up * randomDirection2D.y
+        ).normalized;
         // MODIFICATION END
 
         // This is the target position for Ball1's *projection* onto Ball2's plane.
-        Vector3 ball1_projected_target_on_b2_plane = ball2WorldPos + offsetDirectionWorld * targetSeparation_d;
+        Vector3 ball1_projected_target_on_b2_plane =
+            ball2WorldPos + offsetDirectionWorld * targetSeparation_d;
 
-        Vector3 directionToProjectedTarget = (ball1_projected_target_on_b2_plane - camPos).normalized;
+        Vector3 directionToProjectedTarget = (
+            ball1_projected_target_on_b2_plane - camPos
+        ).normalized;
 
         float cosAngle = Vector3.Dot(directionToProjectedTarget, camForward);
         if (cosAngle <= 0.0001f)
         {
-            Debug.LogError("Cannot position Ball1: target projection is too far sideways from camera's perspective.");
+            Debug.LogError(
+                "Cannot position Ball1: target projection is too far sideways from camera's perspective."
+            );
             return;
         }
         float distanceAlongRay = distCamToBall1Plane / cosAngle;
@@ -98,7 +113,11 @@ public class T2_Occlusion : MonoBehaviour
         Ball1.transform.position = newBall1WorldPos;
     }
 
-    private float FindSeparationForOcclusion(float r1_occluder, float r2_occluded, float targetOcclusionFraction)
+    private float FindSeparationForOcclusion(
+        float r1_occluder,
+        float r2_occluded,
+        float targetOcclusionFraction
+    )
     {
         if (targetOcclusionFraction >= 0.999f)
         {
@@ -133,7 +152,8 @@ public class T2_Occlusion : MonoBehaviour
 
     public static float CalculateIntersectionArea(float r1, float r2, float d)
     {
-        if (d <= 0.00001f) d = 0.00001f;
+        if (d <= 0.00001f)
+            d = 0.00001f;
 
         if (d >= r1 + r2)
         {
@@ -152,11 +172,13 @@ public class T2_Occlusion : MonoBehaviour
 
         float acos_arg1_num = d2 + r1_2 - r2_2;
         float acos_arg1_den = 2 * d * r1;
-        float acos_arg1 = (acos_arg1_den == 0) ? 0 : Mathf.Clamp(acos_arg1_num / acos_arg1_den, -1f, 1f);
+        float acos_arg1 =
+            (acos_arg1_den == 0) ? 0 : Mathf.Clamp(acos_arg1_num / acos_arg1_den, -1f, 1f);
 
         float acos_arg2_num = d2 + r2_2 - r1_2;
         float acos_arg2_den = 2 * d * r2;
-        float acos_arg2 = (acos_arg2_den == 0) ? 0 : Mathf.Clamp(acos_arg2_num / acos_arg2_den, -1f, 1f);
+        float acos_arg2 =
+            (acos_arg2_den == 0) ? 0 : Mathf.Clamp(acos_arg2_num / acos_arg2_den, -1f, 1f);
 
         float term1 = r1_2 * Mathf.Acos(acos_arg1);
         float term2 = r2_2 * Mathf.Acos(acos_arg2);

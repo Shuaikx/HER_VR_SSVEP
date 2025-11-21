@@ -369,7 +369,7 @@ MonoBehaviour:
   timer: 0
   CurrentBall: {fileID: 990074493}
   TextBoard: {fileID: 1490431312}
-  dataRecorder: {fileID: 0}
+  dataRecorder: {fileID: 108487338}
 --- !u!1 &516648994
 GameObject:
   m_ObjectHideFlags: 0
@@ -1374,7 +1374,7 @@ MonoBehaviour:
   center: {fileID: 1438040450}
   Balls: {fileID: 476432411}
   IsSSVEP: 1
-  targetNumber: 1
+  targetNumber: 11
   targetVisualWidth_angle: 3
   angularDistance: 20
   expSettingsVector2: []

@@ -6,13 +6,8 @@ public class T2_Control : MonoBehaviour
 {
     public GameObject OrignalBall;
     public Transform RandomField;
-    void Start()
-    {
-        
-    }
 
-    void Update()
-    {
-        
-    }
+    void Start() { }
+
+    void Update() { }
 }
