@@ -10,8 +10,8 @@ using Random = UnityEngine.Random;
 
 public class ExpList
 {
-    private List<float> angularDistance_O = new List<float>() { 20f, 30f, 40f }; // 直径
-    private List<float> targetWidth_O = new List<float>() { 4f, 3f, 2f }; // 角度
+    private List<float> angularDistance_O = new List<float>() { 20f, 30f, 40f }; // Diameter
+    private List<float> targetWidth_O = new List<float>() { 4f, 3f, 2f }; // Angle
 
     // private List<float> angularDistance_O = new List<float>() { 30f, 30f, 30f }; // 直径
     // private List<float> targetWidth_O = new List<float>() { 4f, 4f, 4f };// 角度
@@ -19,7 +19,7 @@ public class ExpList
     public List<float> targetCycleHz;
     public List<float> targetCyclePhasedelay;
 
-    // 排列组合 顺序随机 每次都要遍历 不能重复
+    // Permutation and combination - random order - must traverse each time - cannot repeat
 
     public List<Vector2> expSettingsVector2 = new List<Vector2>();
 
@@ -39,7 +39,7 @@ public class ExpList
         List<Tuple<float, float>> shuffledList = ShuffleMatrixElements(combinationMatrix);
         shuffledList.Insert(0, new Tuple<float, float>(40, 4));
         shuffledList.Insert(0, new Tuple<float, float>(40, 4));
-        Debug.Log("打乱后的实验设置: " + shuffledList.Count);
+        Debug.Log("Shuffled experiment settings: " + shuffledList.Count);
 
         expSettings = shuffledList;
         foreach (var (item1, item2) in shuffledList)
@@ -83,7 +83,7 @@ public class ExpList
     {
         if (listA == null || listB == null || listA.Count == 0 || listB.Count == 0)
         {
-            Debug.LogError("输入的列表不能为空或空。");
+            Debug.LogError("Input lists cannot be null or empty.");
             return null;
         }
 
@@ -112,8 +112,8 @@ public class ExpList
     {
         if (matrix == null)
         {
-            Debug.LogError("输入的矩阵不能为空。");
-            return new List<Tuple<T, U>>(); // 返回一个空列表以避免错误
+            Debug.LogError("Input matrix cannot be null.");
+            return new List<Tuple<T, U>>(); // Return empty list to avoid errors
         }
 
         List<Tuple<T, U>> flatList = new List<Tuple<T, U>>();

@@ -5,11 +5,11 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// 不要搞update里监听了，直接把跳转下一个目标的逻辑写到一个函数里，跑完逻辑以后直接触发。
+/// Don't listen in update, directly write the logic to jump to next target into a function, trigger after completing logic.
 /// </summary>
 public class aimTarget_Gaze : MonoBehaviour
 {
-    [Header("Timer设置")]
+    [Header("Timer Settings")]
     [SerializeField]
     private float notifyTime = 1f;
 
@@ -19,7 +19,7 @@ public class aimTarget_Gaze : MonoBehaviour
     [SerializeField]
     private float reponseTime = 1f;
 
-    [Header("Gaze设置")]
+    [Header("Gaze Settings")]
     [SerializeField]
     private GameObject cursor;
 
@@ -38,7 +38,7 @@ public class aimTarget_Gaze : MonoBehaviour
     [SerializeField]
     private Text textBoard;
 
-    [Header("场景设置")]
+    [Header("Scene Settings")]
     [SerializeField]
     private AudioClip bingo;
 
@@ -69,7 +69,7 @@ public class aimTarget_Gaze : MonoBehaviour
     private OVRInput.Button buttonA = OVRInput.Button.One; // 默认是 A 按钮
     private OVRInput.Button buttonB = OVRInput.Button.Two; // 默认是 B 按钮
 
-    [Header("小球Controller")]
+    [Header("Ball Controller")]
     [SerializeField]
     private GazeBallsController ballsController;
 
@@ -110,7 +110,7 @@ public class aimTarget_Gaze : MonoBehaviour
         else
             targetNumber = 11;
         SetTextBoardContext("Press Space to Start the Practice Blocks");
-        initCurosrVisibility(); //决定cursor的显示
+        initCurosrVisibility(); // Decide cursor display
         isPause = true;
         dataRecorder.CreateNewLogFile();
     }
@@ -139,9 +139,9 @@ public class aimTarget_Gaze : MonoBehaviour
         }
         confirmationMethods();
 
-        defaultProcess(); //顺序不能变
+        defaultProcess(); // Order cannot change
 
-        if (gazeStatus == GazeStatus.Practice) // 训练阶段
+        if (gazeStatus == GazeStatus.Practice) // Training phase
         {
             if (
                 Input.GetKeyDown(KeyCode.Z)
@@ -149,7 +149,7 @@ public class aimTarget_Gaze : MonoBehaviour
                 || count == maxPracticeBlockCount * targetNumber + 1
             )
             {
-                clabiratedAndStart(); //校准
+                clabiratedAndStart(); // Calibrate
                 return;
             }
         }
@@ -329,7 +329,7 @@ public class aimTarget_Gaze : MonoBehaviour
         cursor.transform.position = combinedRay.origin + combinedRay.direction * cursorDistance;
         float dwellThreshold = 0.6f;
         RaycastHit hit;
-        Transform hitted; // 使用合并射线进行射线检测
+        Transform hitted; // Use combined ray for raycast detection
         if (isDwellable)
         {
             if (Physics.Raycast(combinedRay, out hit))

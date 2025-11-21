@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Loom : MonoBehaviour
 {
-    //�Ƿ��Ѿ���ʼ��
+    // Whether already initialized
     static bool isInitialized;
 
     private static Loom _ins;
@@ -25,7 +25,7 @@ public class Loom : MonoBehaviour
         isInitialized = true;
     }
 
-    //��ʼ��
+    // Initialize
     public static void Initialize()
     {
         if (!isInitialized)
@@ -41,17 +41,17 @@ public class Loom : MonoBehaviour
         }
     }
 
-    //����ִ�е�Ԫ�����ӳ٣�
+    // Struct for elements to execute (no delay)
     struct NoDelayedQueueItem
     {
         public Action<object> action;
         public object param;
     }
 
-    //ȫ��ִ���б������ӳ٣�
+    // Global execution list (no delay)
     List<NoDelayedQueueItem> listNoDelayActions = new List<NoDelayedQueueItem>();
 
-    //����ִ�е�Ԫ�����ӳ٣�
+    // Struct for elements to execute (with delay)
     struct DelayedQueueItem
     {
         public Action<object> action;
@@ -59,16 +59,16 @@ public class Loom : MonoBehaviour
         public float time;
     }
 
-    //ȫ��ִ���б������ӳ٣�
+    // Global execution list (with delay)
     List<DelayedQueueItem> listDelayedActions = new List<DelayedQueueItem>();
 
-    //���뵽���߳�ִ�ж��У����ӳ٣�
+    // Queue to main thread execution queue (no delay)
     public static void QueueOnMainThread(Action<object> taction, object param)
     {
         QueueOnMainThread(taction, param, 0f);
     }
 
-    //���뵽���߳�ִ�ж��У����ӳ٣�
+    // Queue to main thread execution queue (with delay)
     public static void QueueOnMainThread(Action<object> action, object param, float time)
     {
         if (time != 0)
@@ -96,10 +96,10 @@ public class Loom : MonoBehaviour
         }
     }
 
-    //��ǰִ�е�����ʱ������
+    // Currently executing non-delayed list
     List<NoDelayedQueueItem> currentActions = new List<NoDelayedQueueItem>();
 
-    //��ǰִ�е�����ʱ������
+    // Currently executing delayed list
     List<DelayedQueueItem> currentDelayed = new List<DelayedQueueItem>();
 
     void Update()

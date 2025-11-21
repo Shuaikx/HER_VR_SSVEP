@@ -22,7 +22,7 @@ public class recordData : MonoBehaviour
     private int reRenterTime;
     private float ave_distance,
         std_deviation;
-    private List<float> distanceList = new List<float>(); // 存储每帧的 distance 值
+    private List<float> distanceList = new List<float>(); // Store each frame's distance value
 
     public void recordreRenterTime(int time)
     {
@@ -82,7 +82,7 @@ public class recordData : MonoBehaviour
         }
         ave_distance /= distanceList.Count;
 
-        // 计算方差
+        // Calculate variance
 
         foreach (float dist in distanceList)
         {
@@ -90,7 +90,7 @@ public class recordData : MonoBehaviour
         }
         std_deviation /= distanceList.Count;
 
-        // 计算标准差
+        // Calculate standard deviation
         float standardDeviation = Mathf.Sqrt(std_deviation);
     }
 

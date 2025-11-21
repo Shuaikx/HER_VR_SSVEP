@@ -14,15 +14,17 @@ public class EyeInteractable : MonoBehaviour
 
     [SerializeField]
     private Material OnHoverActiveMaterial;
+
     [SerializeField]
     private Material OnHoverInActiveMaterial;
     private MeshRenderer meshRenderer;
+
     void Start() => meshRenderer = GetComponent<MeshRenderer>();
 
     // Update is called once per frame
     void Update()
     {
-        if(IsHovered)
+        if (IsHovered)
         {
             meshRenderer.material = OnHoverActiveMaterial;
             OnObjectHover?.Invoke(gameObject);

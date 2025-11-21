@@ -7,37 +7,44 @@ public enum OutlineColor
 {
     yellow,
     green,
-    red
+    red,
 }
 
-public class Ball : MonoBehaviour {
+public class Ball : MonoBehaviour
+{
     public int Index;
     private Material material;
     private Transform trans;
     private Vector3 primitiveScale;
     private Vector3 smallerScale;
-    [SerializeField] private Outline outline;
-    [SerializeField] private Color colorOrigin = Color.white;
-    [SerializeField] private Color colorNotify = Color.blue;
 
+    [SerializeField]
+    private Outline outline;
+
+    [SerializeField]
+    private Color colorOrigin = Color.white;
+
+    [SerializeField]
+    private Color colorNotify = Color.blue;
 
     private bool triggered;
-	// Use this for initialization
-	void Awake() {
+
+    // Use this for initialization
+    void Awake()
+    {
         material = gameObject.GetComponent<Renderer>().material;
         trans = gameObject.GetComponent<Transform>();
-        smallerScale = new Vector3(1,1,1);
+        smallerScale = new Vector3(1, 1, 1);
 
         triggered = false;
-	}
+    }
 
     void Start()
     {
         primitiveScale = trans.lossyScale;
-        if(outline == null)
+        if (outline == null)
             outline = GetComponent<Outline>();
     }
-
 
     public void changeColorToBlue()
     {
@@ -73,7 +80,7 @@ public class Ball : MonoBehaviour {
 
     public void alterToSmallSize()
     {
-        if(trans.localScale != smallerScale)
+        if (trans.localScale != smallerScale)
         {
             trans.localScale = smallerScale;
         }
@@ -81,7 +88,6 @@ public class Ball : MonoBehaviour {
 
     public void alterToPrimitiveSize()
     {
-
         if (trans.localScale != primitiveScale)
         {
             trans.localScale = primitiveScale;
@@ -95,7 +101,7 @@ public class Ball : MonoBehaviour {
 
     public void changeOutlineColor(string outlineColor)
     {
-        if(outlineColor == OutlineColor.yellow.ToString())
+        if (outlineColor == OutlineColor.yellow.ToString())
         {
             outline.OutlineColor = Color.yellow;
         }
@@ -124,5 +130,4 @@ public class Ball : MonoBehaviour {
         outline.OutlineWidth = 5.0f;
         outline.enabled = false;
     }
-
 }

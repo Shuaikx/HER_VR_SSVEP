@@ -1,16 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
+using Oculus.Platform;
+using Oculus.Platform.Models;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Oculus.Platform;
-using Oculus.Platform.Models;
-using System.Diagnostics.Tracing;
 
 public class aimTarget : MonoBehaviour
 {
-    [SerializeField] private int trialCount = 10;
+    [SerializeField]
+    private int trialCount = 10;
     public IOManager ioM;
     public OVRFaceExpressions faceExpressions;
     public GameObject cursor;
@@ -29,7 +30,7 @@ public class aimTarget : MonoBehaviour
     public recordData recData;
     public sceneManager sM;
 
-    [Header("小球Controller")]
+    [Header("Ball Controller")]
     public GazeBallsController BallsController;
 
     private float currentTime;
@@ -41,20 +42,21 @@ public class aimTarget : MonoBehaviour
     int count = 0;
     private Vector3 frozenCursorPosition_blink;
     private float freezeTimer_blink = 0f;
-    private bool isBlinking =false;
+    private bool isBlinking = false;
     private bool isConfirmed_blink = false;
     private bool isConfirmed_dwell = false;
     private float dwellTimer_dwell = 0f;
     private bool isConfirmed_airTap = false;
     private bool isConfirmed_once = false;
     public static bool inPractice = true;
+
     //private int reRenterTime = 0;
     private bool hasHitTarget = false;
     private bool middleHasHitTarget = false;
     private Outline ballOutline = null;
 
-    private OVRInput.Button buttonA = OVRInput.Button.One;  // 默认是 A 按钮
-    private OVRInput.Button buttonB = OVRInput.Button.Two;  // 默认是 B 按钮
+    private OVRInput.Button buttonA = OVRInput.Button.One; // 默认是 A 按钮
+    private OVRInput.Button buttonB = OVRInput.Button.Two; // 默认是 B 按钮
 
     // Use this for initialization
     void Start()
@@ -88,7 +90,7 @@ public class aimTarget : MonoBehaviour
             }
         }
 
-        if(!inPractice)
+        if (!inPractice)
             clabiratedAndStart();
 
         if ((isConfirmed_once || Input.GetKeyDown("s") || OVRInput.GetDown(buttonB)) && !inPractice)
@@ -97,11 +99,11 @@ public class aimTarget : MonoBehaviour
             {
                 if (!updating)
                     updating = true;
-                if(count == 0)
+                if (count == 0)
                 {
                     centerPoint.SetActive(false);
                 }
-                if(IOManager.stateCM == Modality.ModalityState.airTap)// 如果是blink或者airTap就正常记录
+                if (IOManager.stateCM == Modality.ModalityState.airTap) // 如果是blink或者airTap就正常记录
                 {
                     Transform hitted = rayShoot();
                     recData.recordAxis(preBall, hitted, getCorrectDirection());
@@ -119,12 +121,12 @@ public class aimTarget : MonoBehaviour
                 ball.changeColorToWhite();
                 showNextTarget();
                 count++;
-                if(count == trialCount)
+                if (count == trialCount)
                 {
                     IOManager.finishExperiment();
                     SceneManager.LoadScene("over");
                 }
-                restTime.text = (Mathf.Floor((99 - count)  / 11)).ToString();
+                restTime.text = (Mathf.Floor((99 - count) / 11)).ToString();
             }
         }
 
@@ -142,13 +144,16 @@ public class aimTarget : MonoBehaviour
                 startGame = true;
                 currentTime = Time.time;
                 // preShootDirection = cam.transform.forward;
-                if (IOManager.stateCM== Modality.ModalityState.blink || IOManager.stateCM == Modality.ModalityState.airTap)
+                if (
+                    IOManager.stateCM == Modality.ModalityState.blink
+                    || IOManager.stateCM == Modality.ModalityState.airTap
+                )
                 {
                     IOManager.createUser();
                 }
                 if (IOManager.stateCM == Modality.ModalityState.dwell)
                 {
-                   IOManager.createUser_dwell();
+                    IOManager.createUser_dwell();
                 }
             }
         }
@@ -185,7 +190,8 @@ public class aimTarget : MonoBehaviour
         {
             currentTargetIndex = 0;
         }
-        else currentTargetIndex++;
+        else
+            currentTargetIndex++;
     }
 
     void retrievePreBall()
@@ -217,7 +223,7 @@ public class aimTarget : MonoBehaviour
         }
     }
 
-    void baselineFeedback() // 控制outline
+    void baselineFeedback() // Control outline
     {
         combinedRay = CombineRays();
         RaycastHit hit;
@@ -235,25 +241,24 @@ public class aimTarget : MonoBehaviour
 
             foreach (GameObject obj in rootObjects)
             {
-                // 检查根对象的名字是否包含 "ball"
+                // Check if root object name contains "ball"
                 if (obj.name.Contains("Ball"))
                 {
-                    // 获取 Outline 组件并禁用
+                    // Get Outline component and disable
                     Outline outline = obj.GetComponent<Outline>();
                     if (outline != null)
-                       outline.enabled = false;
+                        outline.enabled = false;
                 }
             }
         }
     }
 
-
     Transform rayShoot()
     {
-        // 获取合并后的射线
+        // Get combined ray
         combinedRay = CombineRays();
         RaycastHit hit;
-        Transform hitted;// 使用合并射线进行射线检测
+        Transform hitted; // Use combined ray for raycast detection
         middleHasHitTarget = hasHitTarget;
         if (Physics.Raycast(combinedRay, out hit))
         {
@@ -279,23 +284,23 @@ public class aimTarget : MonoBehaviour
             hitted = ball.transform;
             hasHitTarget = false;
         }
-        cursor.transform.position = combinedRay.origin + combinedRay.direction * 97.0f;// 更新光标位置为射线方向的远端位置
+        cursor.transform.position = combinedRay.origin + combinedRay.direction * 97.0f; // Update cursor position to far end of ray direction
         return hitted;
     }
 
     public Ray CombineRays()
     {
-        // 左眼和右眼的起点
+        // Left eye and right eye start points
         Vector3 leftStart = leftEyePos.transform.position;
         Vector3 rightStart = rightEyePos.transform.position;
-        // 左眼和右眼的方向
+        // Left eye and right eye directions
         Vector3 leftDir = leftEyePos.transform.forward.normalized;
         Vector3 rightDir = rightEyePos.transform.forward.normalized;
-        // 计算中间点作为新射线的起点
+        // Calculate midpoint as new ray start point
         Vector3 combinedStart = (leftStart + rightStart) * 0.5f;
-        // 计算方向的平均值并归一化，作为新射线的方向
+        // Calculate average of directions and normalize as new ray direction
         Vector3 combinedDir = (leftDir + rightDir).normalized;
-        // 返回新的射线
+        // Return new ray
         return new Ray(combinedStart, combinedDir);
     }
 
@@ -303,17 +308,18 @@ public class aimTarget : MonoBehaviour
     {
         if (IOManager.stateVisible == Modality.VisibilityState.visible)
         {
-            // 设置为不透明白色
+            // Set to opaque white
             Color opaqueWhite = new Color(1f, 1f, 1f, 1f); // RGBA: (1, 1, 1, 1)
             cursor.GetComponent<Renderer>().material.color = opaqueWhite;
         }
-        if (IOManager.stateVisible == Modality.VisibilityState.invisible){
-            // 设置为全透明白色
+        if (IOManager.stateVisible == Modality.VisibilityState.invisible)
+        {
+            // Set to fully transparent white
             Color transparentWhite = new Color(1f, 1f, 1f, 0f); // RGBA: (1, 1, 1, 0)
             cursor.GetComponent<Renderer>().material.color = transparentWhite;
         }
     }
-     
+
     void confirmationMethods()
     {
         isConfirmed_once = false;
@@ -334,14 +340,14 @@ public class aimTarget : MonoBehaviour
     void airTap()
     {
         rayShoot();
-        if(handGesture.isPinched && !isConfirmed_airTap)
+        if (handGesture.isPinched && !isConfirmed_airTap)
         {
             isConfirmed_airTap = true;
             AudioSource.PlayClipAtPoint(bingo, new Vector3(0, 0, 0));
             isConfirmed_once = true;
         }
 
-        if(!handGesture.isPinched)
+        if (!handGesture.isPinched)
         {
             isConfirmed_airTap = false;
         }
@@ -354,10 +360,10 @@ public class aimTarget : MonoBehaviour
         cursor.transform.position = combinedRay.origin + combinedRay.direction * 97.0f;
         float dwellThreshold = 0.6f;
         RaycastHit hit;
-        Transform hitted;// 使用合并射线进行射线检测
+        Transform hitted; // 使用合并射线进行射线检测
         //Outline outline = currentBall.GetComponent<Outline>();
         //outline.enabled = true;
-        
+
         if (Physics.Raycast(combinedRay, out hit))
         {
             if (hit.transform.name.Contains("Ball"))
@@ -371,12 +377,16 @@ public class aimTarget : MonoBehaviour
                 ballOutline.enabled = true;
                 dwellTimer_dwell += Time.deltaTime;
                 float maxOutlineWidth = 4.0f;
-                ballOutline.OutlineWidth = Mathf.Lerp(0, maxOutlineWidth, dwellTimer_dwell / dwellThreshold);
+                ballOutline.OutlineWidth = Mathf.Lerp(
+                    0,
+                    maxOutlineWidth,
+                    dwellTimer_dwell / dwellThreshold
+                );
 
                 if (dwellTimer_dwell > dwellThreshold & !isConfirmed_dwell)
                 {
                     recData.recordDewellInfo();
-                    AudioSource.PlayClipAtPoint(bingo, new Vector3(0, 0, 0));//选择成功
+                    AudioSource.PlayClipAtPoint(bingo, new Vector3(0, 0, 0)); //选择成功
                     dwellTimer_dwell = dwellThreshold;
                     isConfirmed_dwell = true;
                     ballOutline.OutlineWidth = 0;
@@ -384,10 +394,6 @@ public class aimTarget : MonoBehaviour
                     recData.celarList();
                     confirm_dwellResult(hit.transform.name);
                 }
-
-                
-                
-                
             }
             else
             {
@@ -413,10 +419,7 @@ public class aimTarget : MonoBehaviour
     // dewll 确认以后判断对错
     void confirm_dwellResult(string targetName)
     {
-        if (targetName.Equals(currentBall.name))
-        {
-
-        }
+        if (targetName.Equals(currentBall.name)) { }
     }
 
     void dwell_origin()
@@ -426,7 +429,7 @@ public class aimTarget : MonoBehaviour
         cursor.transform.position = combinedRay.origin + combinedRay.direction * 97.0f;
         float dwellThreshold = 0.6f;
         RaycastHit hit;
-        Transform hitted;// 使用合并射线进行射线检测
+        Transform hitted; // 使用合并射线进行射线检测
         Outline outline = currentBall.GetComponent<Outline>();
         outline.enabled = true;
         if (Physics.Raycast(combinedRay, out hit))
@@ -447,12 +450,16 @@ public class aimTarget : MonoBehaviour
                 outline.enabled = true;
                 dwellTimer_dwell += Time.deltaTime;
                 float maxOutlineWidth = 3.0f;
-                outline.OutlineWidth = Mathf.Lerp(0, maxOutlineWidth, dwellTimer_dwell / dwellThreshold);
+                outline.OutlineWidth = Mathf.Lerp(
+                    0,
+                    maxOutlineWidth,
+                    dwellTimer_dwell / dwellThreshold
+                );
 
                 if (dwellTimer_dwell > dwellThreshold & !isConfirmed_dwell)
                 {
                     recData.recordDewellInfo();
-                    AudioSource.PlayClipAtPoint(bingo, new Vector3(0, 0, 0));//选择成功
+                    AudioSource.PlayClipAtPoint(bingo, new Vector3(0, 0, 0)); //选择成功
                     dwellTimer_dwell = dwellThreshold;
                     isConfirmed_dwell = true;
                     outline.OutlineWidth = 0;
@@ -478,7 +485,7 @@ public class aimTarget : MonoBehaviour
 
     void blink()
     {
-        if(!isBlinking)//不在眨眼过程中的时候就一直探测
+        if (!isBlinking) // When not in blinking process, keep detecting
         {
             rayShoot();
         }
@@ -488,39 +495,43 @@ public class aimTarget : MonoBehaviour
 
         bool isLeftEyeBlinking = leftBlink > blinkThreshold;
         bool isRightEyeBlinking = rightBlink > blinkThreshold;
-        bool isBlinkingDetected  = isLeftEyeBlinking && isRightEyeBlinking;
+        bool isBlinkingDetected = isLeftEyeBlinking && isRightEyeBlinking;
         // restTime.text = isBlinkingDetected.ToString();
 
         if (isBlinkingDetected)
         {
             if (!isBlinking)
             {
-                // 开始眨眼，冻结 cursor 位置 保存住，如果成功的话就记录
+                // Start blinking, freeze cursor position and save it, if successful then record
                 frozenCursorPosition_blink = cursor.transform.position;
                 isBlinking = true;
                 freezeTimer_blink = 0f;
             }
         }
-        else//没有眨眼或者中途取消眨眼的话直接变成false
+        else // No blinking or cancel blinking midway, directly set to false
         {
             isBlinking = false;
             freezeTimer_blink = 0f;
-            isConfirmed_blink = false;//重置状态允许选择
+            isConfirmed_blink = false; // Reset state to allow selection
         }
 
-        if (isBlinking & !isConfirmed_blink)//如果开始眨眼的话一定要满足多少时间才可以
+        if (isBlinking & !isConfirmed_blink) // If start blinking, must meet time requirement
         {
             freezeTimer_blink += Time.deltaTime;
             if (freezeTimer_blink >= 0.15 || !isBlinkingDetected)
             {
-                // 结束眨眼，解除冻结
-                AudioSource.PlayClipAtPoint(bingo, new Vector3(0, 0, 0));//选择成功
+                // End blinking, release freeze
+                AudioSource.PlayClipAtPoint(bingo, new Vector3(0, 0, 0)); // Selection successful
                 isBlinking = false;
                 freezeTimer_blink = 0f;
                 Transform hitted = rayShoot();
-                recData.recordAxis(preBall, hitted, getCorrectDirection(frozenCursorPosition_blink));
+                recData.recordAxis(
+                    preBall,
+                    hitted,
+                    getCorrectDirection(frozenCursorPosition_blink)
+                );
                 recData.recordDistance();
-                isConfirmed_blink = true;//表示选择完成，禁止连续选择
+                isConfirmed_blink = true; // Indicates selection complete, prevent continuous selection
                 isConfirmed_once = true;
             }
         }

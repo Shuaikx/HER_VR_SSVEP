@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class changeColor : MonoBehaviour {
+public class changeColor : MonoBehaviour
+{
     Image image;
 
     public void changeToRed()
@@ -23,5 +24,4 @@ public class changeColor : MonoBehaviour {
         image = transform.GetComponent<Image>();
         image.color = Color.white;
     }
-
 }

@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class ShowFPS : MonoBehaviour
 {
-    private float m_LastUpdateShowTime = 0f;  //上一次更新帧率的时间;  
-    private float m_UpdateShowDeltaTime = 0.01f;//更新帧率的时间间隔;  
-    private int m_FrameUpdate = 0;//帧数;  
+    private float m_LastUpdateShowTime = 0f;  // Last frame rate update time  
+    private float m_UpdateShowDeltaTime = 0.01f;// Frame rate update time interval  
+    private int m_FrameUpdate = 0;// Frame count  
     private float m_FPS = 0;
     void Awake()
     {

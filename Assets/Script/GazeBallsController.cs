@@ -14,4 +14,3 @@ public class GazeBallsController : MonoBehaviour
         gameObject.BroadcastMessage("enableOutline", false);
     }
 }
-

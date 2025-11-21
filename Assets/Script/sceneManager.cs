@@ -29,20 +29,20 @@ public class sceneManager : MonoBehaviour
     public GameObject center;
     public GameObject Balls;
     public bool IsSSVEP = false;
-[Header("目标数")]
+[Header("Target Number")]
     //set the following three factors
    [SerializeField]public int targetNumber =1; // todo:
     
     public static int expCount = 0;
     //public static int expCount2 = 0;
     //the distance from eyes to the certer
-    float depthDistance = 100; //深度
+    float depthDistance = 100; // Depth
 
-    Vector3 centerPoint; // 圆盘中心的位置，每一次更新场景的时候都要重置到 （0,0,depthDistance）这个位置
+    Vector3 centerPoint; // Circle center position, needs to reset to (0,0,depthDistance) every time scene updates
     Vector3 firstballPosition;
 
     //miminum included angle between two sides (side is from one target to center point)
-    [Header("目前场景的设置")]
+    [Header("Current Scene Settings")]
     public float targetVisualWidth_angle = 3;
     public float angularDistance = 20;
 
@@ -64,14 +64,14 @@ public class sceneManager : MonoBehaviour
         includedAngle_angle = (float)360 / targetNumber;
         threeIncludedAngle_angle = 5 * includedAngle_angle;
         centerPoint = new Vector3(0, 0, depthDistance);
-        if (isPratice)// 开始大小
+        if (isPratice)// Initial size
         {
             angularDistance = 30f;
             targetVisualWidth_angle = 4f;
         }
         oneSide_angle = sceneUtility.outputOneSide_angle(angularDistance, threeIncludedAngle_angle);
         Debug.LogWarning($"oneSide_angle {oneSide_angle}");
-        produceFittsCircle(targetNumber, firstBall, firstballPosition); // 生成小球
+        produceFittsCircle(targetNumber, firstBall, firstballPosition); // Generate balls
     }
 
     
@@ -80,7 +80,7 @@ public class sceneManager : MonoBehaviour
         isPratice = state;
     }
 
-    // 初始场景设置
+    // Initial scene setup
     public void updateOriginSence()
     {
         angularDistance = expList.expSettings[expCount].Item1;
@@ -96,7 +96,7 @@ public class sceneManager : MonoBehaviour
 
         changeBallPosition(targetNumber, firstBall);
     }
-    // 场景更新 大小 间距 改变
+    // Scene update - size and spacing change
     public void updateScene()
     {
         expCount++;
@@ -115,7 +115,7 @@ public class sceneManager : MonoBehaviour
     }
     
     
-    // 创建11个小球
+    // Create 11 balls
     private void produceFittsCircle(int targetNumber, GameObject originBall, Vector3 startBallPosition)
     {
         firstballPosition = sceneUtility.outputFirstballPosition(centerPoint, depthDistance, oneSide_angle);
@@ -164,11 +164,11 @@ public class sceneManager : MonoBehaviour
 
     private void changeBallPosition(int targetNumber, GameObject originBall)
     {
-        // 记录上一个球的位置
+        // Record previous ball position
         firstballPosition = sceneUtility.outputFirstballPosition(centerPoint, depthDistance, oneSide_angle);
-        // 将origin ball 移动到该位置
+        // Move origin ball to that position
         originBall.transform.position = firstballPosition;
-        //将目标小球变成预设的width
+        // Change target ball to preset width
         float targetActualWidth = sceneUtility.targetActualWidth(targetVisualWidth_angle, originBall.transform, eye.transform);
         originBall.transform.localScale = new Vector3(1,1,1);
         originBall.transform.localScale *= targetActualWidth; 
@@ -203,18 +203,18 @@ public class sceneManager : MonoBehaviour
 
     public static void QuitApplication()
     {
-        Debug.Log("尝试退出程序...");
+        Debug.Log("Attempting to quit program...");
 
-        // 判断是否在 Unity Editor 中运行
+        // Check if running in Unity Editor
 #if UNITY_EDITOR
-        // 如果在 Editor 中，停止 Play 模式
+        // If in Editor, stop Play mode
         EditorApplication.isPlaying = false;
 #else
-        // 如果在打包的程序中，调用 Application.Quit()
+        // If in packaged program, call Application.Quit()
         Application.Quit();
 #endif
 
-        // 注意：Application.Quit() 在打包程序中不会立即退出，
-        // 通常会在当前帧结束后或更晚发生。
+        // Note: Application.Quit() in packaged program doesn't exit immediately,
+        // usually happens after current frame ends or later.
     }
 }

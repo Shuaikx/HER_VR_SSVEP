@@ -5,6 +5,7 @@ using UnityEngine;
 public class aimTarget_SSVEP_t2 : aimTarget_SSEVEP
 {
     public T2_SceneManager sM_2;
+
     /*protected override void Start()
     {
         base.Start();

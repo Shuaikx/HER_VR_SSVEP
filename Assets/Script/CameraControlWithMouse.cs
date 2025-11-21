@@ -2,21 +2,23 @@ using UnityEngine;
 
 public class CameraControlWithMouse : MonoBehaviour
 {
-    [Header("视角控制参数")]
-    [Tooltip("鼠标灵敏度")]
+    [Header("View Angle Control Parameters")]
+    [Tooltip("Mouse Sensitivity")]
     public float mouseSensitivity = 100f;
 
-    [Tooltip("垂直视角的最小角度（向上看多少）")]
-    public float minPitch = -85f; // 向上看的最大角度（通常是负值）
+    [Tooltip("Minimum vertical angle (look up limit)")]
+    public float minPitch = -85f; // Maximum upward angle (negative value)
 
-    [Tooltip("垂直视角的最小角度（向下看多少）")]
-    public float maxPitch = 85f;  // 向下看的最大角度
+    [Tooltip("Maximum vertical angle (look down limit)")]
+    public float maxPitch = 85f; // Maximum downward angle
 
-    [Tooltip("水平视角限制（从初始方向左右各能转多少度，90表示总共180度视野）")]
-    public float horizontalYawLimit = 90f; // 水平方向从中心点左右各能旋转的角度
+    [Tooltip(
+        "Horizontal angle limit, speed of left/right rotation from initial forward direction, 90 means can reach 180-degree field of view"
+    )]
+    public float horizontalYawLimit = 90f; // Horizontal left/right rotation angle limit from initial forward direction
 
-    private float xRotation = 0f; // 当前摄像机的垂直旋转角度 (Pitch)
-    private float yRotation = 0f; // 当前摄像机的水平旋转角度 (Yaw)
+    private float xRotation = 0f; // Current camera's vertical rotation angle (Pitch)
+    private float yRotation = 0f; // Current camera's horizontal rotation angle (Yaw)
     private float initialYaw;
 
     void Start()
@@ -26,19 +28,18 @@ public class CameraControlWithMouse : MonoBehaviour
 
         Vector3 initialEulerAngles = transform.localEulerAngles;
 
-        // 初始化水平旋转 (Yaw)
-        initialYaw = initialEulerAngles.y; // 记录初始的Y轴朝向作为限制的中心
-        yRotation = initialYaw;            // 当前的yRotation从初始朝向开始累积
+        // Initialize horizontal rotation (Yaw)
+        initialYaw = initialEulerAngles.y; // Record initial Y-axis orientation as control reference
+        yRotation = initialYaw; // Current yRotation starts accumulating from initial orientation
 
-        // 初始化垂直旋转 (Pitch)
+        // Initialize vertical rotation (Pitch)
         xRotation = initialEulerAngles.x;
-        if (xRotation > 180f) // 将欧拉角X的范围从 (0,360) 转换到 (-180, 180)
+        if (xRotation > 180f) // Convert Euler X range from (0,360) to (-180, 180)
         {
             xRotation -= 360f;
         }
-        xRotation = Mathf.Clamp(xRotation, minPitch, maxPitch); // 应用初始的Pitch限制
+        xRotation = Mathf.Clamp(xRotation, minPitch, maxPitch); // Apply initial Pitch limits
 
-        // 应用初始旋转，确保与计算值一致
         transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
     }
 
@@ -47,24 +48,28 @@ public class CameraControlWithMouse : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-        // --- 水平旋转 (Yaw) ---
-        yRotation += mouseX; // 累积总的Y轴旋转
+        // --- Horizontal Rotation (Yaw) ---
+        yRotation += mouseX; // Accumulate sensed Y-axis rotation
 
-        // 计算当前累积的yRotation相对于初始朝向(initialYaw)的角度差
-        // Mathf.DeltaAngle 会返回两个角度之间的最短差异（例如350度和10度之间是20度，而不是-340度）
+        // Calculate current accumulated yRotation's angle difference from initial orientation (initialYaw)
+        // Mathf.DeltaAngle returns shortest difference between two angles (e.g., between 350掳 and 10掳 is 20掳, not -340掳)
         float angleDifferenceFromInitial = Mathf.DeltaAngle(initialYaw, yRotation);
 
-        // 将这个角度差限制在 [-horizontalYawLimit, +horizontalYawLimit] 范围内
-        float clampedAngleDifference = Mathf.Clamp(angleDifferenceFromInitial, -horizontalYawLimit, horizontalYawLimit);
+        // Clamp angle difference within [-horizontalYawLimit, +horizontalYawLimit] range
+        float clampedAngleDifference = Mathf.Clamp(
+            angleDifferenceFromInitial,
+            -horizontalYawLimit,
+            horizontalYawLimit
+        );
 
-        // 最终应用的Y轴旋转是初始朝向加上被限制了的角度差
+        // Final applied Y-axis rotation is initial orientation plus clamped angle difference
         float finalYaw = initialYaw + clampedAngleDifference;
 
-        // --- 垂直旋转 (Pitch) ---
+        // --- Vertical Rotation (Pitch) ---
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, minPitch, maxPitch);
 
-        // 应用旋转
+        // Apply rotation
         transform.localRotation = Quaternion.Euler(xRotation, finalYaw, 0f);
 
         if (Input.GetKeyDown(KeyCode.Escape))

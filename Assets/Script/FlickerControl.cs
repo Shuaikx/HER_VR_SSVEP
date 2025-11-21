@@ -4,25 +4,43 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class FlickerControl : MonoBehaviour
 {
-    [SerializeField] PortControl port;
-    [SerializeField] SocketControl socket;
-    [SerializeField] aimTarget_SSEVEP aim;
-    [SerializeField] private float notifyTime = 1f;
-    [SerializeField] private float flickTime = 4f;
-    [SerializeField] private float reponseTime = 1f;
-    [SerializeField] private float timer = 0f;
+    [SerializeField]
+    PortControl port;
+
+    [SerializeField]
+    SocketControl socket;
+
+    [SerializeField]
+    aimTarget_SSEVEP aim;
+
+    [SerializeField]
+    private float notifyTime = 1f;
+
+    [SerializeField]
+    private float flickTime = 4f;
+
+    [SerializeField]
+    private float reponseTime = 1f;
+
+    [SerializeField]
+    private float timer = 0f;
 
     private int cueCount => Mathf.RoundToInt(notifyTime * 60);
     private int flickCount => Mathf.RoundToInt(flickTime * 60);
     private int responseCount => Mathf.RoundToInt(reponseTime * 60);
     private int countIdx = 0;
     private int totalCount => cueCount + flickCount + responseCount;
-    [SerializeField] private GameObject CurrentBall;
-    [SerializeField] private Text TextBoard;
-    [SerializeField] private DataRecorder dataRecorder;
+
+    [SerializeField]
+    private GameObject CurrentBall;
+
+    [SerializeField]
+    private Text TextBoard;
+
+    [SerializeField]
+    private DataRecorder dataRecorder;
     private static Ball_SSVEP ball;
     private Outline outline;
     private bool flickerState = false;
@@ -34,6 +52,7 @@ public class FlickerControl : MonoBehaviour
 
     // TurnFlickerOn 事件：当闪烁开启时触发，并传递当前闪烁的GameObject
     public event Action OnFlickerTurnedOn;
+
     // TurnFlickerOff 事件：当闪烁关闭时触发
     public event Action OnFlickerTurnedOff;
 
@@ -42,7 +61,10 @@ public class FlickerControl : MonoBehaviour
         // 实现单例模式逻辑
         if (Instance != null && Instance != this)
         {
-            Debug.LogWarning("FlickerControl: Found an existing instance, destroying new one.", this);
+            Debug.LogWarning(
+                "FlickerControl: Found an existing instance, destroying new one.",
+                this
+            );
             Destroy(gameObject);
         }
         else
@@ -51,7 +73,7 @@ public class FlickerControl : MonoBehaviour
             // 如果你希望这个单例在场景切换时不被销毁，添加以下行
             // DontDestroyOnLoad(gameObject); // 根据你的需求决定是否需要
         }
-        
+
         ball = CurrentBall.GetComponent<Ball_SSVEP>();
         outline = CurrentBall.GetComponent<Outline>();
         dataRecorder.CreateNewLogFile();
@@ -59,7 +81,7 @@ public class FlickerControl : MonoBehaviour
 
     // private void Start()
     // {
-    //    
+    //
     // }
     private byte[] trigger;
     private byte[] triggerEnd;
@@ -70,11 +92,9 @@ public class FlickerControl : MonoBehaviour
 
         if (SocketControl.GetAuthenticateState() && flickerState && countIdx < totalCount)
         {
-
             // Cue
             if (countIdx < cueCount - 1)
             {
-
                 outline.OutlineColor = Color.blue;
                 outline.enabled = true;
             }
@@ -86,12 +106,10 @@ public class FlickerControl : MonoBehaviour
                 byte b1 = Convert.ToByte(200);
                 triggerEnd = new byte[1] { b1 };
                 // Debug.LogWarning($"Cue End {Time.realtimeSinceStartup * 1000} - {countIdx}");
-
             }
             // Stim
             else if (countIdx >= cueCount && countIdx < cueCount + flickCount)
             {
-                
                 // Debug.LogWarning(Time.frameCount);
                 // 刺激第一帧
                 if (!isStimulated)
@@ -104,13 +122,10 @@ public class FlickerControl : MonoBehaviour
                     // gameObject.BroadcastMessage("startStimulate");
                     OnFlickerTurnedOn?.Invoke();
                     // Debug.LogWarning("OnFlickerTurnedOn Invoked");
-
                 }
-                
-                
             }
             // 反馈
-            else if (countIdx >= cueCount + flickCount )
+            else if (countIdx >= cueCount + flickCount)
             {
                 if (countIdx == cueCount + flickCount)
                 {
@@ -136,13 +151,10 @@ public class FlickerControl : MonoBehaviour
                     // gameObject.BroadcastMessage("endStimulate");
                     OnFlickerTurnedOff?.Invoke();
                     isStimulated = false;
-
                 }
-
             }
-            
-            countIdx++;
 
+            countIdx++;
         }
         else
         {
@@ -152,14 +164,10 @@ public class FlickerControl : MonoBehaviour
             isStimulatEnd = false;
             countIdx = 0;
         }
-
-
-
     }
 
     public void TurnFlickerOn(GameObject targetBall)
     {
-
         // ball.endStimulate();
         // trialIndex += 1;
         gameObject.BroadcastMessage("endStimulate");
@@ -168,8 +176,8 @@ public class FlickerControl : MonoBehaviour
         outline = CurrentBall.GetComponent<Outline>();
         if (!flickerState)
             flickerState = true;
-
     }
+
     public void TurnFlickerOff()
     {
         if (flickerState)
@@ -212,6 +220,7 @@ public class FlickerControl : MonoBehaviour
 
         dataRecorder.LogDataRow(aim.getBlockIndex(), ball.Index, result, 3.0f);
     }
+
     private void toNextTarget()
     {
         if (pause)

@@ -9,12 +9,12 @@ using UnityEngine.UI;
 
 public class PortControl : MonoBehaviour
 {
-    #region ���崮������
-    public string portName = "COM12"; //������
-    public int baudRate = 115200 * 4; //������
-    public Parity parity = Parity.None; //Ч��λ
-    public int dataBits = 8; //����λ
-    public StopBits stopBits = StopBits.One; //ֹͣλ
+    #region Serial Port Parameters
+    public string portName = "COM12"; // Port name
+    public int baudRate = 115200 * 4; // Baud rate
+    public Parity parity = Parity.None; // Parity bit
+    public int dataBits = 8; // Data bits
+    public StopBits stopBits = StopBits.One; // Stop bits
     SerialPort sp = null;
     Thread dataReceiveThread;
 
@@ -33,10 +33,10 @@ public class PortControl : MonoBehaviour
         //dataReceiveThread.Start();
     }
 
-    #region �������ڣ����򿪴���
+    #region Open serial port, or open port
     public void OpenPort()
     {
-        //��������
+        // Set parameters
         sp = new SerialPort(portName, baudRate, parity, dataBits, stopBits);
         sp.ReadTimeout = 400;
         try
@@ -98,7 +98,7 @@ public class PortControl : MonoBehaviour
             {
                 try
                 {
-                    bytes = sp.Read(buffer, 0, buffer.Length); //�����ֽ�
+                    bytes = sp.Read(buffer, 0, buffer.Length); // Read bytes
                     if (bytes == 0)
                     {
                         continue;
@@ -121,7 +121,7 @@ public class PortControl : MonoBehaviour
     #endregion
 
 
-    #region ��������
+    #region Send data
     public void WriteData(byte[] data)
     {
         if (sp.IsOpen)
