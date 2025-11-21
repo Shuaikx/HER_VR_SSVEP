@@ -1,2 +1,0 @@
-UserID,Timestamp,ExpType,BlockIndex,TargetIndex,PhaseRadius,TargetVisualAngular,Result,SelectionTime
-1,2025-10-16 16:28:00.796,SSVEP_Task1,1,1,30,4,False,3

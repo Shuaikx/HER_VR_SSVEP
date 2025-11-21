@@ -52,7 +52,7 @@ public class sceneManager : MonoBehaviour
     float threeIncludedAngle_angle;
     float oneSide_angle;
     ExpList expList;
-    private bool isPratice = true;
+    public bool isPratice = true;
     public List<Vector2> expSettingsVector2;
 
     private void Awake()
